@@ -1,0 +1,2 @@
+#Forbidding web access to all files
+deny from all
