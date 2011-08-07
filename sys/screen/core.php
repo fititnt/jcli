@@ -5,12 +5,25 @@
  * @copyright   Copyright (C) Joomla! Coders Brazil @JCoderBR. All rights reserved.
  * @license     GNU General Public License version 3
  */
-define( '_JEXEC', 1 );
-define( '_JCLI', dirname(__FILE__) );
+defined('_JCLI') or die();
+
+echo 'core';
 
 
 
-//Load Configuration
-$config = parse_ini_file('config.ini');
-//Load JCli system
-include_once 'sys/load.php';
+
+
+/*
+   
+$i = 0;
+
+do {
+
+    echo "\njcli>";
+    $imput = fread(STDIN, 80);//$imput = $JCliX->in();
+    var_dump($imput);
+    $i++;
+
+} while ( $imput != "0" );
+
+*/

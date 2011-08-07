@@ -5,12 +5,12 @@
  * @copyright   Copyright (C) Joomla! Coders Brazil @JCoderBR. All rights reserved.
  * @license     GNU General Public License version 3
  */
-define( '_JEXEC', 1 );
-define( '_JCLI', dirname(__FILE__) );
 
-
-
-//Load Configuration
-$config = parse_ini_file('config.ini');
-//Load JCli system
-include_once 'sys/load.php';
+class JCliStartScreen extends JCli
+{
+    public function execute( )
+        {        
+        $this->out( 'Some initial info' );
+        }
+}
+JCli::getInstance( 'JCliStartScreen' )->execute();
