@@ -9,6 +9,13 @@ defined('_JCLI') or die();
 
 class JCliExtended extends JCli
 {
+     /**
+     * CLI var
+     * 
+     * @since  0.2
+     */
+    public $cliPrefix = array('project' => NULL, 'extension' => NULL, 'librares' => array('jcli') );
+    
     /**
      * Core functions of JCliExtended
      * 
@@ -29,8 +36,66 @@ class JCliExtended extends JCli
      *
      * @since   0.2
      */
-    public $loadedFunctionsFiles = array() ;
+    public $loadedFunctionsFiles = array();
     
+    
+    /**
+     * Get input from CLI, in a safe way. Joomla Platforms JCli::in bug on Win
+     *
+     * @param   string      $input: input of user
+     *
+     * @since   0.2
+     */
+    public function in_s(){      
+        
+        /* Here be dragons */
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {            
+            $input = substr( rtrim(fread(STDIN, 8192), "\n") , 0, -1); //$input = rtrim(fread(STDIN, 8192), "\n");
+        } else {
+            $input = $this->in($input);
+        }        
+        
+        /*
+        $length = strlen( $input ); 
+        $lastchar = substr( $input , -2);        
+        if( ctype_cntrl($lastchar) ){
+            $input = substr( $input ,0,-2);
+            echo ' Have Control chars';
+        } else {
+            echo ' Do not have control chars';
+        }
+        */
+        //echo $input;
+        //fread(STDIN, 8192);
+        //die();
+        return $input;
+    }
+    
+    /**
+     * Get CLI prefix
+     *
+     * @return   string      $input: input of user
+     *
+     * @since   0.2
+     */
+    public function getCliPrefix(){
+        $result = '';
+        if( $this->cliPrefix['project'] != NULL ){
+            $result .= $this->cliPrefix['project'] . ':';
+        }
+        $i = 0;
+        foreach( $this->cliPrefix['librares'] AS $library){
+            $result .= $library;
+            if($i>0){
+              $result = ':'.$result;
+            }
+        }
+        if( $this->cliPrefix['extension'] != NULL ){
+            $result .= '->' . $this->cliPrefix['extension'];
+        }
+        $result .= '>';
+        return $result;        
+    }
     
    
     /**
@@ -76,15 +141,15 @@ class JCliExtended extends JCli
      *
      * @since   0.2
      */    
-    private function _parseInput($imput, $mode = NULL){
-
+    private function _parseInput($input, $mode = NULL){
+        
         $parsedImput = array();
-        if ( in_array('args', $imput) ){
+        if ( in_array('args', $mode) ){
             $parsedImput['args'];
             $parsedImput['command'];
             //...
         }
-        if ( in_array('getopt', $imput) ){
+        if ( in_array('getopt', $mode) ){
             $parsedImput['getopt'];
             $parsedImput['command'];
             //...
@@ -113,9 +178,8 @@ class JCliExtended extends JCli
      *
      * @since   0.2
      */    
-    public function screenLoad($screenName)
-        {        
-            $path = _JCLI . '/sys/screen/'.$screenName.'.php';
+    public function screenLoad( $JCliX, $screenName ){        
+            $path = _JCLI . '/sys/screen/' . $screenName . '.php';
             if( is_file($path) ){
                 include_once( _JCLI . '/sys/screen/'.$screenName.'.php' );
                 return true;
@@ -172,7 +236,6 @@ class JCliExtended extends JCli
      *
      * @since   0.2
      */
-     */
     public function outf( $array ){
 
         //Se for unidimensional...
@@ -188,7 +251,6 @@ class JCliExtended extends JCli
             return false;
         }
         //Se for multidimencional
-
     }
         
 	
@@ -209,10 +271,11 @@ class JCliExtended extends JCli
                 $this->out( $item );
             }
             return true;
-        } else if {
-
+        } else if ( 1 ) {
+            //...
             return true;
         } else {
+            //...
             return false;
         }
         //Se for multidimencional            
@@ -255,7 +318,7 @@ class JCliExtended extends JCli
             return false; //Error
         }
     }
-        
 }
 $JCliX = JCli::getInstance( 'JCliExtended' );
+
 

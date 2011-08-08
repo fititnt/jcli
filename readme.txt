@@ -219,7 +219,6 @@ fititnt.org:jcli:jdb: Checking for Joomla CMS database consistency
 fititnt.org:jcli:jdb: MySQL tables OK. [3 Notices hidden]
 fititnt.org:jcli:jdb> backup -email "fititnt@gmail.com"
 jbackup: backuping database from fititnt.org...
-jbackup: backuping database from fititnt.org...
 jbackup: database backup done. Stored at /home/fititnt/.backups/fititnt.org/2011
 -08-07_19-52/database/fititnt.org-sfxtest.tar.gz
 jmail: send -email "fititnt@gmail.com" -subject "Database backup of fititnt.org 
