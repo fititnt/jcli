@@ -16,5 +16,4 @@ class JClicExtendedScrenStart extends JClicExtended
 }
 //JCli::getInstance( 'JClicExtendedScrenStart' )->execute();
 
-
-echo 'Screen Start test';
+//echo 'Screen Start test';
