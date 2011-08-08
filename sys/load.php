@@ -25,6 +25,9 @@ include_once('library.php');
 
 //
 $JCliX->screenLoad( $JCliX, 'start');
+
+$JCliX->startupLogin( $JCliX );
+
 $JCliX->screenLoad( $JCliX, 'core');
 $JCliX->screenLoad( $JCliX, 'end');
 

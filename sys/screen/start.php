@@ -7,17 +7,12 @@
  */
 defined('_JCLI') or die();
 
-//echo 'Screen Start test';
-
-$JCliX->out('JCliExtended v 0.2alpha');
-$JCliX->out('https://github.com/fititnt/jcli');
-//$JCliX->out('Last use                : (datetime here)');
-//$JCliX->out('Automatic Alerts        : none');
-
-$loadedFunctions = $JCliX->loadFunctions();
-$loadedFunctionsMsg = 'Loaded functions:';
-foreach($loadedFunctions AS $item){
-    $loadedFunctionsMsg .= ' '.$item;
+if( $JCliX->startupCheck() !== TRUE ){
+    echo "Error: ";
+    print_r($JCliX->startupCheck());
+    return false;
+    die("Error"); //Just to be sure xD
 }
 
-$JCliX->out($loadedFunctionsMsg);
+$JCliX->out('JCliExtended v 0.2alpha');
+//$JCliX->out('https://github.com/fititnt/jcli');

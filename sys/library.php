@@ -9,12 +9,21 @@ defined('_JCLI') or die();
 
 class JCliExtended extends JCli
 {
-     /**
-     * CLI var
-     * 
-     * @since  0.2
-     */
+      /**
+      * CLI var
+      * 
+      * @since  0.2
+      */
     public $cliPrefix = array('project' => NULL, 'extension' => NULL, 'librares' => array('jcli') );
+    
+      /**
+      * User login var
+      * 
+      * @since  0.2
+      * 
+      * @todo: remove it later. For sure will not need like this way
+     */
+    public $user = array('username' => 'root', 'password' => NULL, 'sshkey' => NULL);
     
     /**
      * Core functions of JCliExtended
@@ -97,6 +106,24 @@ class JCliExtended extends JCli
         return $result;        
     }
     
+    
+    /**
+     * Set Var
+     *
+     * @return   bool      TRUE if has var to set, FALSE if not
+     * 
+     * @todo:   Make a check for be sure that vars are of the same type to avoid errors
+     *
+     * @since   0.2
+     */
+    public function setVar( $name, $value){
+        if( isset($this->$name) ){
+            $this->$name = $value;
+            return TRUE;
+        } else {
+            return FALSE;
+        }      
+    }
    
     /**
      * Get imput from user, parse it, and call functions, if is need
@@ -126,7 +153,42 @@ class JCliExtended extends JCli
            
     }
 
+    /**
+     * startupCheck
+     * Make a few routines before load the JCliX
+     *
+     * @return   mixed      TRUE if ok, and String or Array.  (Think better later)
+     *
+     * @since   0.2
+     */
+    public function startupCheck(){
+        //@todo...
+        return TRUE;    
+    }
     
+    /**
+     * startupLogin
+     * Check for one user and password, if are rigth, load respective data from
+     * user directory
+     *
+     * @return   mixed      TRUE if ok, and String or Array.  (Think better later)
+     *
+     * @since   0.2
+     */
+    public function startupLogin( $JCliX ){
+        
+        $user = $this->screenLoad( $JCliX, 'login');
+        if ( $this->user['sshkey'] == NULL || strlen($this->user['sshkey']) < 4 ){            
+            $replateUser = $this->user;
+            $replateUser['sshkey'] = _JCLI . '/user/'. $user['username'] . '/.ssh/id_rsa';            
+            $this->setVar( 'user', $replateUser );
+        }
+        $JCliX->out( 'Startup login test. Dump...');
+        $JCliX->out( 'Username: ' . $this->user['username'] . ' | Password:' . $this->user['password'] . ' | SSH Key Path: ' . $this->user['sshkey'] );
+        $JCliX->out( 'Login "ok"'. "\n\n");  
+        //@todo...
+        return TRUE;    
+    }
     
      /**
      * Get imput from user and parse, and retun respnse like arg($argc & $argv) and getopt() function
