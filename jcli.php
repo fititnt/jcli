@@ -8,8 +8,6 @@
 define( '_JEXEC', 1 );
 define( '_JCLI', dirname(__FILE__) );
 
-
-
 //Load Configuration
 $config = parse_ini_file('config.ini');
 //Load JCli system

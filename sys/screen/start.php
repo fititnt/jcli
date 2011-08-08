@@ -14,5 +14,5 @@ if( $JCliX->startupCheck() !== TRUE ){
     die("Error"); //Just to be sure xD
 }
 
-$JCliX->out('JCliExtended v 0.2alpha');
+$JCliX->out('JCliExtended v 0.3alpha');
 //$JCliX->out('https://github.com/fititnt/jcli');

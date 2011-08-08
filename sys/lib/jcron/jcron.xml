@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="11.1" type="cli" group="core">
+	<name>jcron</name>
+	<author>Joomla! Project</author>
+	<creationDate>2011-08-08</creationDate>
+	<copyright>Copyright (C) 2005 - 2011 Open Source Matters. All rights reserved.</copyright>
+	<license>GPL3</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>0.1</version>
+	<description></description>
+	<files>
+		<filename library="jcron">jcron.php</filename>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.cli_jcron.ini</language>
+	</languages>
+	<config>
+	</config>
+	<config>
+            <commands>
+                    <command 
+                    name="set"
+                    alias="" 
+                    type=""
+                    description="JCLI_SYS_JCRON_SET__DESC"
+                    help="JCLI_SYS_JCRON_SET_HELP"
+                    >
+                        <param
+                            name=""
+                            alias=""
+                            />
+                    </command>
+            </commands>
+	</config>
+</extension>
