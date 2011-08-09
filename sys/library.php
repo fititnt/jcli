@@ -26,18 +26,11 @@ class JCliExtended extends JCli
     public $user = array('username' => 'root', 'password' => NULL, 'sshkey' => NULL);
     
     /**
-     * Core functions of JCliExtended
+     * Libraries object
      * 
      * @since  0.2
      */
-    public $coreFunctions = array('jcli');
-    
-    /**
-     * Array of files of custon functions.
-     *
-     * @since   0.2
-     */
-    public $loadedFunctions = array();
+    public $libraries;
     
 
     /**
@@ -136,10 +129,12 @@ class JCliExtended extends JCli
      *
      * @since   0.2
      */
-    public function doIt( $imput ){        
+    public function doIt( $input ){        
         
-        $parsedInput = $this->_parseInput( $imput , array( 'arg', 'getopt' ) );
+        $parsedInput = $this->_parseArgs( $input ) ;
         
+        print_r( $parsedInput ); //die();
+        /*
         //Fist check if is one core function
         if ( in_array( strtolower($parsedImput['command']) ,  $this->coreFunctions) ){
             //...
@@ -150,6 +145,7 @@ class JCliExtended extends JCli
         } else {            
             return false; //Error
         }
+         */
            
     }
 
@@ -162,9 +158,35 @@ class JCliExtended extends JCli
      * @since   0.2
      */
     public function startupCheck(){
+        
+        $this->libraries = new stdClass();
+        $libraries = $this->_librariesLoad( _JCLI . '/sys/lib/' );
+        $this->libraries->core = $libraries;
+        $libraries = $this->_librariesLoad( _JCLI . '/lib/' );
+        $this->libraries->ext = $libraries;
+        
+        //print_r($this->libraries);
+
         //@todo...
         return TRUE;    
     }
+    /*
+     * 
+     */
+    private function _librariesLoad($path){
+        jimport('joomla.filesystem.folder');
+        $libraries = new stdClass();
+        $folders = JFolder::folders( $path );
+        
+        foreach($folders AS $folder){
+            if( true ){ //Some better check is is really a librarie
+                $libraries->$folder = TRUE;
+                //@todo: load functions inside the library
+            }
+        }
+        return $libraries;
+    }
+    
     
     /**
      * startupLogin
@@ -202,10 +224,14 @@ class JCliExtended extends JCli
      * @return  parsed input, or false if get some error
      *
      * @since   0.2
+     * 
+     * @deprecated
+     *  
      */    
     private function _parseInput($input, $mode = NULL){
         
-        $parsedImput = array();
+        $args = array();
+        /*
         if ( in_array('args', $mode) ){
             $parsedImput['args'];
             $parsedImput['command'];
@@ -226,6 +252,7 @@ class JCliExtended extends JCli
         } else {
             return false; //Error
         }
+        */
     }
     
     
@@ -274,9 +301,10 @@ class JCliExtended extends JCli
      * @return  void
      *
      * @since   0.2
+     * 
+     * @deprecated
      */
-    public function loadFunctions()
-        {
+    public function loadFunctions() {
         jimport('joomla.filesystem.folder');
         $this->loadedFunctionsFiles = JFolder::files( _JCLI .'/functions', 'php');
         
@@ -380,6 +408,117 @@ class JCliExtended extends JCli
             return false; //Error
         }
     }
+    
+    /*
+     * Command Line Interface (CLI) utility class.
+     * http://pwfisher.com/nucleus/index.php?itemid=45
+     * 
+     * @author              Patrick Fisher <patrick@pwfisher.com>
+     * 
+     * @since               0.3
+     */
+    private function _parseArgs( $input ){
+
+        $out = array();
+        $argv = array();
+        
+        $imputArray = explode(" ", $input );
+        
+        $lib = array_shift( $imputArray );
+        
+        $argv = $imputArray;
+        
+        foreach ($argv as $arg){
+
+            // --foo --bar=baz
+            if (substr($arg,0,2) == '--'){
+                $eqPos                  = strpos($arg,'=');
+
+                // --foo
+                if ($eqPos === false){
+                    $key                = substr($arg,2);
+                    $value              = isset($out[$key]) ? $out[$key] : true;
+                    $out[$key]          = $value;
+                }
+                // --bar=baz
+                else {
+                    $key                = substr($arg,2,$eqPos-2);
+                    $value              = substr($arg,$eqPos+1);
+                    $out[$key]          = $value;
+                }
+            }
+            // -k=value -abc
+            else if (substr($arg,0,1) == '-'){
+
+                // -k=value
+                if (substr($arg,2,1) == '='){
+                    $key                = substr($arg,1,1);
+                    $value              = substr($arg,3);
+                    $out[$key]          = $value;
+                }
+                // -abc
+                else {
+                    $chars              = str_split(substr($arg,1));
+                    foreach ($chars as $char){
+                        $key            = $char;
+                        $value          = isset($out[$key]) ? $out[$key] : true;
+                        $out[$key]      = $value;
+                    }
+                }
+            }
+            // plain-arg
+            else {
+                $value                  = $arg;
+                $out[]                  = $value;
+            }
+        }
+        $out = array_unshift($out, $lib);
+        //var_dump($out);
+        return $out;
+    }
+    
+    /*
+     * Get Boolean
+     * 
+     * @see                 http://pwfisher.com/nucleus/index.php?itemid=45
+     * 
+     * @author              Patrick Fisher <patrick@pwfisher.com>
+     * 
+     * @since               0.3
+     */
+    private function _getBoolean( $value , $default = false){
+        if (!isset( $value )){
+            return $default;
+        }
+        
+        if (is_bool($value)){
+            return $value;
+        }
+        if (is_int($value)){
+            return (bool)$value;
+        }
+        if (is_string($value)){
+            $value                      = strtolower($value);
+            $map = array(
+                'y'                     => true,
+                'n'                     => false,
+                'yes'                   => true,
+                'no'                    => false,
+                'true'                  => true,
+                'false'                 => false,
+                '1'                     => true,
+                '0'                     => false,
+                'on'                    => true,
+                'off'                   => false,
+            );
+            if (isset($map[$value])){
+                return $map[$value];
+            }
+        }
+        return $default;
+    }
+    
+    
 }
 $JCliX = JCli::getInstance( 'JCliExtended' );
 

@@ -7,19 +7,13 @@
  */
 defined('_JCLI') or die();
 
-$loadedFunctions = $JCliX->loadFunctions();
-$loadedFunctionsMsg = 'Loaded functions:';
-foreach($loadedFunctions AS $item){
-    $loadedFunctionsMsg .= ' '.$item;
-}
-
-$JCliX->out($loadedFunctionsMsg);
 
 do {
-    //echo "\njcli>";
+    //Print Screen
     $JCliX->out( $JCliX->getCliPrefix(), FALSE );
-    
-    
+    //Take user input  
     $input = $JCliX->in_s();//$JCliX->in();
+    //Run
+    $JCliX->doIt( $input );
     
 } while ( strpos($input,'exit') === FALSE );
