@@ -158,13 +158,16 @@ class JCliExtended extends JCli
      * @since   0.2
      */
     public function startupCheck(){
-        
+
         $this->libraries = new stdClass();
-        $libraries = $this->_librariesLoad( _JCLI . '/sys/lib/' );
+        $libraries = $this->_librariesLoad( JCLI_CORELIB_PATH );
         $this->libraries->core = $libraries;
-        $libraries = $this->_librariesLoad( _JCLI . '/lib/' );
-        $this->libraries->ext = $libraries;
-        
+        $libraries = $this->_librariesLoad( JCLI_3RDLIB_PATH );
+        $this->libraries->third = $libraries;
+        $libraries = $this->_librariesLoad( JCLI_UNIX_PATH );
+        $this->libraries->unix = $libraries;
+        $libraries = $this->_librariesLoad( JCLI_WIN_PATH );
+        $this->libraries->unix = $libraries;
         //print_r($this->libraries);
 
         //@todo...
@@ -270,7 +273,7 @@ class JCliExtended extends JCli
     public function screenLoad( $JCliX, $screenName ){        
             $path = _JCLI . '/sys/screen/' . $screenName . '.php';
             if( is_file($path) ){
-                include_once( _JCLI . '/sys/screen/'.$screenName.'.php' );
+                include_once( $path );
                 return true;
             } else {
                 return false;
@@ -305,8 +308,9 @@ class JCliExtended extends JCli
      * @deprecated
      */
     public function loadFunctions() {
+        /*
         jimport('joomla.filesystem.folder');
-        $this->loadedFunctionsFiles = JFolder::files( _JCLI .'/functions', 'php');
+        $this->loadedFunctionsFiles = JFolder::f( _JCLI .'/functions', 'php');
         
         
         foreach( $this->loadedFunctionsFiles AS $item ){
@@ -314,6 +318,8 @@ class JCliExtended extends JCli
         }
         
         return $this->loadedFunctions;
+
+    }*/
         }
         
         

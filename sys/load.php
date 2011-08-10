@@ -21,6 +21,7 @@ include_once( $config['JOOMLA_FRAMEWORK_PATH']  );
 jimport( 'joomla.application.cli' );
 
 //Load JCli Library
+include_once('defines.php');
 include_once('library.php');
 
 //
