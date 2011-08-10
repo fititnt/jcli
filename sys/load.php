@@ -7,9 +7,15 @@
  */
 defined('_JCLI') or die();
 
+
+
 if($config['DEBUG'] == 1) {
-    var_dump($config);
+    //var_dump($config);
+    //Try make PHP invoce more strict errors. Try.
+    error_reporting(E_STRICT); // Please work
+    ini_set('display_errors',E_STRICT); // Please work
 }
+
 
 if (!file_exists($config['JOOMLA_FRAMEWORK_PATH'])){
     echo 'The Joomla Framework Path "' . $config['JOOMLA_FRAMEWORK_PATH'] . '" does not exist. Please revise add a valid value at config.ini';

@@ -10,8 +10,7 @@ defined('_JCLI') or die();
 if( $JCliX->startupCheck() !== TRUE ){
     echo "Error: ";
     print_r($JCliX->startupCheck());
-    return false;
-    die("Error"); //Just to be sure xD
+    die("Error");
 }
 
 $JCliX->out('JCliExtended v 0.3alpha');

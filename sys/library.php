@@ -32,6 +32,13 @@ class JCliExtended extends JCli
      */
     public $libraries;
     
+    /**
+     * Last command
+     * 
+     * @since  0.2
+     */
+    public $command;
+    
 
     /**
      * Array of files of custon functions.
@@ -71,6 +78,54 @@ class JCliExtended extends JCli
         //fread(STDIN, 8192);
         //die();
         return $input;
+    }
+    
+    /**
+     * Trying to reach a better way to output vars than JCli out
+     *
+     * @param   mixed      $output: input of user
+     * 
+     * @param   mixed      $param: false simple output, true `more advanced` output
+     *
+     * @since   0.3
+     */
+    public function out_s( $output , $param = FALSE){ //
+        
+        if(is_a( $output )){//Check if is object
+              
+            print_r($output); // Think in make it better later
+            //Unidimensional
+            /*
+            foreach($array AS $item){
+                $this->out( $item );
+                echo "is_a foreach";
+            }
+             */
+            //@todo: make it work for multidimensional arrays
+            
+        } else if( is_array($output) ){//Check if is array
+            //Unidimensional
+            foreach($array AS $item){
+                $this->out( $item );
+                echo "is_array foreach";
+            }
+            //@todo: make it work for multidimensional arrays
+        } else if(is_bool( $output )){//Check if is array
+            if($param === TRUE){
+                if($output){
+                    $this->out( 'TRUE' );
+                } else {
+                    $this->out( 'FALSE' );
+                }
+            } else {
+                $this->out( $output );
+            }
+        } else if(is_string( $output )) {
+            $this->out( $output );
+        } else {            
+            var_dump( $output); //If REALLY does not know what is
+        }       
+        
     }
     
     /**
@@ -133,22 +188,92 @@ class JCliExtended extends JCli
         
         $parsedInput = $this->_parseArgs( $input ) ;
         
-        print_r( $parsedInput ); //die();
-        /*
-        //Fist check if is one core function
-        if ( in_array( strtolower($parsedImput['command']) ,  $this->coreFunctions) ){
-            //...
-            return true;
-        } else if ( in_array( strtolower( $parsedImput['command'] ), $this->loadedFunctions ) ){
-            //...
-            return true;
-        } else {            
-            return false; //Error
+        switch ( (string)$this->command->task) {
+            case 'jcli':
+                    $this->JCLI();
+                break;
+            case 'exit':
+                    $this->JCLI();
+                break;
+            default:
+                break;
         }
-         */
+        
            
     }
 
+    /*
+     * JCLI Core
+     * JCli task will aways need one adicional param that will do somethink
+     * 
+     * @var         string      $command: command to excecute
+     *  
+     * @return      bool        TRUE if no errors
+     * 
+     * @since       0.3
+     */
+    public function JCLI( $command = NULL ) {
+        
+        //If is unset, load from $this->command
+        if($command === NULL){
+           $command = $this->command;
+        }        
+        /* Maybe enable it later
+        if($command->task != 'jcli'){
+            return false;
+        }
+        */
+       switch ( (string)$command->param[0] ){
+           case 'debug':
+               $this->_JCLI_debug($command);
+               
+       }
+        //return TRUE;
+        
+    }
+    
+    /*
+     * JCLI Debug
+     * 
+     * @var         string      $command: command to excecute
+     *  
+     * @return      bool        TRUE if no errors
+     * 
+     * @since       0.3
+     */
+    private function _JCLI_debug( $command = NULL ){
+        //If is unset, load from $this->command
+        if($command === NULL){
+           $command = $this->command;
+        }
+        $this->out_s("\nDEBUG variables\n");
+        $this->out_s( '$command' );        
+        $this->out_s( $command );
+        $this->out_s( '$libraries' );        
+        $this->out_s( $this->libraries );
+        $this->out_s( '$user' );        
+        $this->out_s( $this->user );
+        
+        //print_r($command);
+        //$this->out_s( array('teste out_s', 'array2'));
+        
+        //return TRUE;        
+    }
+    
+    /*
+     * JCLI Exit
+     * Terminate the JCli session
+     *  
+     * @return      void
+     * 
+     * @since       0.3
+     */
+    private function _JCLI_exit( ){        
+        die('JCli end of session');
+    }
+    
+    
+    
     /**
      * startupCheck
      * Make a few routines before load the JCliX
@@ -215,50 +340,7 @@ class JCliExtended extends JCli
         return TRUE;    
     }
     
-     /**
-     * Get imput from user and parse, and retun respnse like arg($argc & $argv) and getopt() function
-     *
-     * Returns the global {@link JApplication} object, only creating it if it doesn't already exist.
-     *
-     * @param   string     $imput: input of user
-     * 
-     * @param   array      $mode: options of mode (args, getopt)
-     *
-     * @return  parsed input, or false if get some error
-     *
-     * @since   0.2
-     * 
-     * @deprecated
-     *  
-     */    
-    private function _parseInput($input, $mode = NULL){
-        
-        $args = array();
-        /*
-        if ( in_array('args', $mode) ){
-            $parsedImput['args'];
-            $parsedImput['command'];
-            //...
-        }
-        if ( in_array('getopt', $mode) ){
-            $parsedImput['getopt'];
-            $parsedImput['command'];
-            //...
-        }
-        if ( $mode == NULL){
-            $parsedImput['command'];
-            //...
-        }
-        
-        if( isset($parsedImput['command'] )){
-            return $parsedImput;
-        } else {
-            return false; //Error
-        }
-        */
-    }
-    
-    
+   
     
     
      /**
@@ -319,64 +401,10 @@ class JCliExtended extends JCli
         
         return $this->loadedFunctions;
 
-    }*/
-        }
-        
-        
-    /**
-     * Wrinte one array or object on screen
-     *
-     * @param   mixed  $array    The array to output.
-     *
-     * @return  void
-     *
-     * @since   0.2
-     */
-    public function outf( $array ){
-
-        //Se for unidimensional...
-        if ( is_array($array) ){
-            foreach($array AS $item){
-                $this->out( $item );
-            }
-            return true;
-        } else if ( is_object($array) ) {
-
-            return true;
-        } else {
-            return false;
-        }
-        //Se for multidimencional
-    }
-        
+        }*/
+        }       
 	
-    /**
-     * outt: Write on CLI one object or arrat of itens
-     *
-     * @param   mixed  $object    The $item to insert
-     *
-     * @return  void
-     *
-     * @since   
-     */
-    public function outt( $object ){
-
-        //Se for unidimensional...
-        if ( is_array($array) ){
-            foreach($array AS $item){
-                $this->out( $item );
-            }
-            return true;
-        } else if ( 1 ) {
-            //...
-            return true;
-        } else {
-            //...
-            return false;
-        }
-        //Se for multidimencional            
-    }
-    
+   
      /**
      * Get imput from user and parse, and retun respnse like arg($argc & $argv) and getopt() function
      *
@@ -415,73 +443,45 @@ class JCliExtended extends JCli
         }
     }
     
+    
     /*
-     * Command Line Interface (CLI) utility class.
-     * http://pwfisher.com/nucleus/index.php?itemid=45
+     * Parse imput to obtain arguments
+     * Also reset $this->command, and reset if have something to add
      * 
-     * @author              Patrick Fisher <patrick@pwfisher.com>
+     * @var             string          $input: the user input
      * 
-     * @since               0.3
+     * @return          bool            TRUE if have, at least, one arg (function). Else return false
+     * 
+     * @since           0.3
      */
     private function _parseArgs( $input ){
-
-        $out = array();
-        $argv = array();
+        
+        $this->command = new stdClass();
+        $this->command->raw = $input;//RAW command for devs that do not want parset result
         
         $imputArray = explode(" ", $input );
         
-        $lib = array_shift( $imputArray );
+        $nitems = count($imputArray);
+        $task = array_shift( $imputArray ); //Remove fist item of array
         
-        $argv = $imputArray;
+        if( $nitems  == 0 ){//Maybe better this later
+            return false;
+        }
+
+        $this->command->task = $task;
         
-        foreach ($argv as $arg){
-
-            // --foo --bar=baz
-            if (substr($arg,0,2) == '--'){
-                $eqPos                  = strpos($arg,'=');
-
-                // --foo
-                if ($eqPos === false){
-                    $key                = substr($arg,2);
-                    $value              = isset($out[$key]) ? $out[$key] : true;
-                    $out[$key]          = $value;
-                }
-                // --bar=baz
-                else {
-                    $key                = substr($arg,2,$eqPos-2);
-                    $value              = substr($arg,$eqPos+1);
-                    $out[$key]          = $value;
-                }
-            }
-            // -k=value -abc
-            else if (substr($arg,0,1) == '-'){
-
-                // -k=value
-                if (substr($arg,2,1) == '='){
-                    $key                = substr($arg,1,1);
-                    $value              = substr($arg,3);
-                    $out[$key]          = $value;
-                }
-                // -abc
-                else {
-                    $chars              = str_split(substr($arg,1));
-                    foreach ($chars as $char){
-                        $key            = $char;
-                        $value          = isset($out[$key]) ? $out[$key] : true;
-                        $out[$key]      = $value;
-                    }
-                }
-            }
-            // plain-arg
-            else {
-                $value                  = $arg;
-                $out[]                  = $value;
+        if($nitems > 1){
+            foreach($imputArray AS $item){
+                
+                //POG. Just for work for now
+                $item = str_replace('-', '', $item);                
+                $this->command->param[] = $item;
             }
         }
-        $out = array_unshift($out, $lib);
-        //var_dump($out);
-        return $out;
+        return true;        
     }
+   
+   
     
     /*
      * Get Boolean
