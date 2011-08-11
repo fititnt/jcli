@@ -7,7 +7,7 @@
  */
 defined('_JCLI') or die();
 
-
+//ver possivel erro aqui
 do {
     //Print Screen
     $JCliX->out( $JCliX->getCliPrefix(), FALSE );
@@ -16,4 +16,5 @@ do {
     //Run
     $JCliX->doIt( $input );
     
-} while ( strpos($input,'exit') === FALSE );
+    
+} while ( strpos( $input ,'exit') === FALSE );

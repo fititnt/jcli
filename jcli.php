@@ -10,5 +10,6 @@ define( '_JCLI', dirname(__FILE__) );
 
 //Load Configuration
 $config = parse_ini_file('config.ini');
-//Load JCli system
+//Load JCli system.
 include_once( _JCLI . '/sys/load.php');
+

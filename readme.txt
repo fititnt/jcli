@@ -16,6 +16,41 @@ PHP 5.3
 - Start
 
 ----------------------------- Objetives -----------------------------
+
+--                          New in 2011-08-11                      --
+
+For now, I'm thinking about to make the folowing logic on this Tool.
+
+You can execute almost all codes with just one line, but, if you 'load'
+one envoriment, you will need type less code, and maybe make less errors, but
+still able to execute code outsite this envoriment if use the root command jcli
+
+
+Take as example jcms class:
+
+myjoomlasite.org:jcli> jcli load com_users password
+myjoomlasite.org:jcli->com_users->password> -new -username fititnt -name "Emerso
+n Rocha Luiz" -password "myPass"
+    New User created at myjoomlasite.org
+    id: 43
+    username: fititnt
+    name: Emerson Rocha Luiz
+    password: myPass
+    blocked:
+
+#### Or just execute from root of site ####
+
+myjoomlasite.org:jcli> jcms com_users password -reset -id 42 -password "myNewPas
+s"
+    Are you sure that want to reset password of "Admin" to "myNewPass"
+myjoomlasite.org:jcli>y
+    "Admin" password was reseted to "myNewPass"
+
+
+--                          New in 2011-08-11                      --
+
+--                            Added before                        --
+
 The news lines is now just for internal control, simplificated TDD proposes
 
 ***** General usage ***** 

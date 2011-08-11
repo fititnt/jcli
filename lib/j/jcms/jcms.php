@@ -21,6 +21,14 @@ class JCMS extends JCliExtended {
     */
     var $extension;
     
+    
+    
+    public function JCMS(){
+
+
+    }  
+    
+    
     public function backup( $arguments, $project = NULL, $extension = NULL){
         
         if ($project == NULL && $extension == NULL){
@@ -41,5 +49,39 @@ class JCMS extends JCliExtended {
         //...
         
     }
+    
+	public function com_content( $command ){
+	
+		
+            switch( (string)$command->task ){
+                    case 'ls' :
+                    case 'list':
+
+                            break;
+                    case'del':
+                    case'delete':
+                    case'remove':
+
+                            break;
+
+                        default:
+                    }
+
+        }
+
+	public function com_users( ) {
+	
+	
+	}
+	
+	public function com_admin( ) {
+	
+	}
+	
+	
+	public function com_banners(){
+	
+	} 
+    
     
 }

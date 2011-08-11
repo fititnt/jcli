@@ -197,9 +197,7 @@ class JCliExtended extends JCli
                 break;
             default:
                 break;
-        }
-        
-           
+        } 
     }
 
     /*
@@ -307,6 +305,9 @@ class JCliExtended extends JCli
         $folders = JFolder::folders( $path );
         
         foreach($folders AS $folder){
+            
+            $this->_parteLibrariesXml($path . $folder . DS . $folder  .'.xml');
+            
             if( true ){ //Some better check is is really a librarie
                 $libraries->$folder = TRUE;
                 //@todo: load functions inside the library
@@ -330,7 +331,7 @@ class JCliExtended extends JCli
         $user = $this->screenLoad( $JCliX, 'login');
         if ( $this->user['sshkey'] == NULL || strlen($this->user['sshkey']) < 4 ){            
             $replateUser = $this->user;
-            $replateUser['sshkey'] = _JCLI . '/user/'. $user['username'] . '/.ssh/id_rsa';            
+            $replateUser['sshkey'] = _JCLI . DS. 'user' . DS . $user['username'] . '.ssh'. DS. 'id_rsa';            
             $this->setVar( 'user', $replateUser );
         }
         $JCliX->out( 'Startup login test. Dump...');
@@ -352,8 +353,10 @@ class JCliExtended extends JCli
      *
      * @since   0.2
      */    
-    public function screenLoad( $JCliX, $screenName ){        
-            $path = _JCLI . '/sys/screen/' . $screenName . '.php';
+    public function screenLoad( $JCliX, $screenName ){
+        
+            $path = _JCLI . DS . 'sys' . DS . 'screen'. DS . $screenName . '.php';
+
             if( is_file($path) ){
                 include_once( $path );
                 return true;
@@ -378,31 +381,6 @@ class JCliExtended extends JCli
         }
         return TRUE;
     }
-     
-    
-     /**
-     * Returns array with names of loaded functions
-     *
-     * @return  void
-     *
-     * @since   0.2
-     * 
-     * @deprecated
-     */
-    public function loadFunctions() {
-        /*
-        jimport('joomla.filesystem.folder');
-        $this->loadedFunctionsFiles = JFolder::f( _JCLI .'/functions', 'php');
-        
-        
-        foreach( $this->loadedFunctionsFiles AS $item ){
-            $this->loadedFunctions[] = str_replace('.php', '', strtolower($item));
-        }
-        
-        return $this->loadedFunctions;
-
-        }*/
-        }       
 	
    
      /**
@@ -481,7 +459,59 @@ class JCliExtended extends JCli
         return true;        
     }
    
-   
+    
+    /* Error log
+     * 
+     */
+    public function logError( $msg ){
+        $log = date('Y-m-d H:i:s') . '> ';
+        //Try convert arrays and objects to string
+        if( is_array($msg) || is_a($msg) ){
+            foreach($msg AS $item){
+                $log .= $item . ' | ';
+            }
+        } else{
+            $log = $msg;
+        }
+        if( isset($this->$user['username'] )){
+            $filename = $filename . '.log';
+        } else {
+             $filename = 'undefined.log';
+        }
+        
+        if (is_writable( JCLI_LOG_PATH . DS .$filename )) {
+
+            if (!$handle = fopen( JCLI_LOG_PATH . DS .$filename , 'a+')) {
+                 echo 'Cannot open file ' . JCLI_LOG_PATH . DS .$filename;
+                //die( 'Cannot open file ' . JCLI_LOG_PATH . DS .$filename );
+            }
+
+            if (fwrite($handle, $log . "\n") === FALSE) {
+                 echo 'Cannot write to file ' . JCLI_LOG_PATH . DS .$filename;
+                //die( 'Cannot write to file ' . JCLI_LOG_PATH . DS .$filename );
+            }
+            fclose($handle);
+
+        } else {
+             echo 'Cannot write to file ' . JCLI_LOG_PATH . DS .$filename;
+            //die( 'Cannot write to file ' . JCLI_LOG_PATH . DS .$filename );
+        }    
+        
+        
+    }
+    
+    /*
+     * 
+     */
+   private function _parteLibrariesXml( $file ){
+       
+       if (is_file($file)){
+          $xml = new SimpleXMLElement( $file ); 
+       } else {
+           $xml = FALSE;
+       }
+       return $xml;
+   }
     
     /*
      * Get Boolean
