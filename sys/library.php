@@ -13,8 +13,17 @@ class JCliExtended extends JCli
       * CLI var
       * 
       * @since  0.2
+       * 
+       * @deprecated
       */
     public $cliPrefix = array('project' => NULL, 'extension' => NULL, 'librares' => array('jcli') );
+    
+    /*
+     * CLI var
+     * 
+     * @since 0.3
+     */
+    public $cli;
     
       /**
       * User login var
@@ -47,6 +56,22 @@ class JCliExtended extends JCli
      */
     public $loadedFunctionsFiles = array();
     
+    
+    
+    function __construct($nome, $idade)
+    {
+        $this->cli = array('project' => NULL, 'cmd' => array('jcli') );
+        
+        $this->libraries = new stdClass();
+        $libraries = $this->_librariesLoad( JCLI_CORELIB_PATH );
+        $this->libraries->core = $libraries;
+        $libraries = $this->_librariesLoad( JCLI_3RDLIB_PATH );
+        $this->libraries->third = $libraries;
+        $libraries = $this->_librariesLoad( JCLI_UNIX_PATH );
+        $this->libraries->unix = $libraries;
+        $libraries = $this->_librariesLoad( JCLI_WIN_PATH );
+        $this->libraries->unix = $libraries;
+    }
     
     /**
      * Get input from CLI, in a safe way. Joomla Platforms JCli::in bug on Win
@@ -137,9 +162,19 @@ class JCliExtended extends JCli
      */
     public function getCliPrefix(){
         $result = '';
+        
         if( $this->cliPrefix['project'] != NULL ){
             $result .= $this->cliPrefix['project'] . ':';
         }
+        $n = count( $this->cli['cmd'] );
+        for($i=0; $i < $n; $i++){
+            if($i > 0){
+                $result .= '->';
+            }
+            $result .= $this->cli['cmd'][$i];
+        }
+        /*
+        
         $i = 0;
         foreach( $this->cliPrefix['librares'] AS $library){
             $result .= $library;
@@ -150,6 +185,9 @@ class JCliExtended extends JCli
         if( $this->cliPrefix['extension'] != NULL ){
             $result .= '->' . $this->cliPrefix['extension'];
         }
+         * 
+         * 
+         */
         $result .= '>';
         return $result;        
     }
@@ -186,9 +224,19 @@ class JCliExtended extends JCli
      */
     public function doIt( $input ){        
         
-        $parsedInput = $this->_parseArgs( $input ) ;
+        $this->_parseArgs( $input ) ;
         
-        switch ( (string)$this->command->task) {
+        $taskOne = $this->command->task[0];
+        
+        if($taskOne) { //If have at least one task
+            var_dump($this->libraries);
+        }
+        
+        
+        
+        
+        /*
+        switch ( (string)$taskOne ) {
             case 'jcli':
                     $this->JCLI();
                 break;
@@ -197,7 +245,8 @@ class JCliExtended extends JCli
                 break;
             default:
                 break;
-        } 
+        }
+         */
     }
 
     /*
@@ -259,6 +308,20 @@ class JCliExtended extends JCli
     }
     
     /*
+     * JCLI Load
+     * Load commands
+     *  
+     * @return      void
+     * 
+     * @since       0.3
+     */
+    private function _JCLI_load( ){        
+        foreach($this->command->task AS $item){
+            
+        }
+    }
+    
+    /*
      * JCLI Exit
      * Terminate the JCli session
      *  
@@ -282,15 +345,6 @@ class JCliExtended extends JCli
      */
     public function startupCheck(){
 
-        $this->libraries = new stdClass();
-        $libraries = $this->_librariesLoad( JCLI_CORELIB_PATH );
-        $this->libraries->core = $libraries;
-        $libraries = $this->_librariesLoad( JCLI_3RDLIB_PATH );
-        $this->libraries->third = $libraries;
-        $libraries = $this->_librariesLoad( JCLI_UNIX_PATH );
-        $this->libraries->unix = $libraries;
-        $libraries = $this->_librariesLoad( JCLI_WIN_PATH );
-        $this->libraries->unix = $libraries;
         //print_r($this->libraries);
 
         //@todo...
@@ -326,18 +380,20 @@ class JCliExtended extends JCli
      *
      * @since   0.2
      */
-    public function startupLogin( $JCliX ){
+    public function startupLogin( ){
         
-        $user = $this->screenLoad( $JCliX, 'login');
+        $this->screenLoad( 'login');
+        
         if ( $this->user['sshkey'] == NULL || strlen($this->user['sshkey']) < 4 ){            
             $replateUser = $this->user;
             $replateUser['sshkey'] = _JCLI . DS. 'user' . DS . $user['username'] . '.ssh'. DS. 'id_rsa';            
             $this->setVar( 'user', $replateUser );
         }
-        $JCliX->out( 'Startup login test. Dump...');
-        $JCliX->out( 'Username: ' . $this->user['username'] . ' | Password:' . $this->user['password'] . ' | SSH Key Path: ' . $this->user['sshkey'] );
-        $JCliX->out( 'Login "ok"'. "\n\n");  
+        $this->out_s( 'Startup login test. Dump...');
+        $this->out_s( 'Username: ' . $this->user['username'] . ' | Password:' . $this->user['password'] . ' | SSH Key Path: ' . $this->user['sshkey'] );
+        $this->out_s( 'Login "ok"'. "\n\n");  
         //@todo...
+        
         return TRUE;    
     }
     
@@ -347,20 +403,21 @@ class JCliExtended extends JCli
      /**
      * Include file of one especific screen name
      * 
-     * @param             string          $screenName: name of screen to load
+     * @param             string          $screen: name of screen to load
      *
      * @return  bool       TRUE if file load is fine, FALSE if is not
      *
      * @since   0.2
      */    
-    public function screenLoad( $JCliX, $screenName ){
+    public function screenLoad( $screen ){
         
-            $path = _JCLI . DS . 'sys' . DS . 'screen'. DS . $screenName . '.php';
+            $path = _JCLI . '/sys/screen/'. $screen . '.php';
 
             if( is_file($path) ){
                 include_once( $path );
                 return true;
             } else {
+                $this->logError('JCli->screenLoad: Failed to open '. $path);
                 return false;
             }            
         }
@@ -423,7 +480,7 @@ class JCliExtended extends JCli
     
     
     /*
-     * Parse imput to obtain arguments
+     * Parse imput to obtain array of arguments arguments
      * Also reset $this->command, and reset if have something to add
      * 
      * @var             string          $input: the user input
@@ -431,31 +488,43 @@ class JCliExtended extends JCli
      * @return          bool            TRUE if have, at least, one arg (function). Else return false
      * 
      * @since           0.3
+     * 
+     * @todo            Solve for cases that have '=' in params
      */
     private function _parseArgs( $input ){
         
+      
         $this->command = new stdClass();
         $this->command->raw = $input;//RAW command for devs that do not want parset result
         
         $imputArray = explode(" ", $input );
-        
         $nitems = count($imputArray);
-        $task = array_shift( $imputArray ); //Remove fist item of array
         
         if( $nitems  == 0 ){//Maybe better this later
             return false;
-        }
-
-        $this->command->task = $task;
+        }        
         
-        if($nitems > 1){
-            foreach($imputArray AS $item){
-                
-                //POG. Just for work for now
-                $item = str_replace('-', '', $item);                
-                $this->command->param[] = $item;
+        //@todo: Dirty. Rewrite later
+        $i = 0;
+        do {
+            
+            if( $imputArray[$i]{0} != '-'){
+                $this->command->task[] = $imputArray[$i];
+            } else {
+                $imputArray[$i] = str_replace('-', '', $imputArray[$i]);
+                $paramName = $imputArray[$i];
+                $i++;//Move pointer for next value
+                if( $i < $nitems ){ //Maybe end of array
+                    $this->command->param[$paramName] = $imputArray[$i];
+                    //@todo: remove " and ' not escaped
+                } else {
+                    $this->command->param[$paramName] = TRUE;
+                }                
             }
-        }
+            $i++;
+        //Note: if user double spaces, will ignore nexts. 
+        //Maybe change this behavior   
+        } while ( isset($imputArray[$i]) && $imputArray[$i] != '' ); 
         return true;        
     }
    
@@ -471,33 +540,24 @@ class JCliExtended extends JCli
                 $log .= $item . ' | ';
             }
         } else{
-            $log = $msg;
+            $log = $log . $msg;
         }
         if( isset($this->$user['username'] )){
             $filename = $filename . '.log';
         } else {
              $filename = 'undefined.log';
         }
-        
-        if (is_writable( JCLI_LOG_PATH . DS .$filename )) {
 
-            if (!$handle = fopen( JCLI_LOG_PATH . DS .$filename , 'a+')) {
-                 echo 'Cannot open file ' . JCLI_LOG_PATH . DS .$filename;
-                //die( 'Cannot open file ' . JCLI_LOG_PATH . DS .$filename );
-            }
+        if (!$handle = fopen( JCLI_LOG_PATH . DS .$filename , 'a+')) {
+             echo 'Cannot open file ' . JCLI_LOG_PATH . DS .$filename;
+            //die( 'Cannot open file ' . JCLI_LOG_PATH . DS .$filename );
+        }
 
-            if (fwrite($handle, $log . "\n") === FALSE) {
-                 echo 'Cannot write to file ' . JCLI_LOG_PATH . DS .$filename;
-                //die( 'Cannot write to file ' . JCLI_LOG_PATH . DS .$filename );
-            }
-            fclose($handle);
-
-        } else {
+        if (fwrite($handle, $log . "\n") === FALSE) {
              echo 'Cannot write to file ' . JCLI_LOG_PATH . DS .$filename;
             //die( 'Cannot write to file ' . JCLI_LOG_PATH . DS .$filename );
-        }    
-        
-        
+        }
+        fclose($handle);
     }
     
     /*

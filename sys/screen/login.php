@@ -10,11 +10,11 @@ defined('_JCLI') or die();
 
 $user = array('username' => 'root', 'password' => NULL, 'sshkey' => NULL);
 
-$JCliX->out('Username:', FALSE );
-$JCliX->setVar( 'username', $JCliX->in_s() );
+$this->out('Username:', FALSE );
+$this->setVar( 'username', $this->in_s() );
 
-$JCliX->out('Password:', FALSE );
-$JCliX->setVar( 'password', $JCliX->in_s() );
+$this->out('Password:', FALSE );
+$this->setVar( 'password', $this->in_s() );
 
-$JCliX->out('SSHKeyPath:', FALSE );
-$JCliX->setVar( 'sshkey', $JCliX->in_s() );
+$this->out('SSHKeyPath:', FALSE );
+$this->setVar( 'sshkey', $this->in_s() );

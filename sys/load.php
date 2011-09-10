@@ -30,13 +30,12 @@ jimport( 'joomla.application.cli' );
 include_once('defines.php');
 include_once('library.php');
 
-$JCliX->logError( array( 'this', 'is', 'spartaaaaaaaaaaaaaaa!'));
+$JCliX->screenLoad( 'start');
 
-$JCliX->screenLoad( $JCliX, 'start');
+$JCliX->startupLogin( );
 
-$JCliX->startupLogin( $JCliX );
+$JCliX->screenLoad( 'core');
+$JCliX->screenLoad( 'end');
 
-$JCliX->screenLoad( $JCliX, 'core');
-$JCliX->screenLoad( $JCliX, 'end');
 
 

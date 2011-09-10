@@ -7,11 +7,14 @@
  */
 defined('_JCLI') or die();
 
-if( $JCliX->startupCheck() !== TRUE ){
+
+
+if( $this->startupCheck() !== TRUE ){
     echo "Error: ";
-    print_r($JCliX->startupCheck());
+    print_r($this->startupCheck());
     die("Error");
 }
 
-$JCliX->out('JCliExtended v 0.3alpha');
+
+$this->out('JCliExtended v 0.3alpha');
 //$JCliX->out('https://github.com/fititnt/jcli');
